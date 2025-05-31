@@ -1,0 +1,33 @@
+.bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+}
+
+.inp-username,
+.inp-parol,
+.inp-name {
+  border-radius: 10px;
+  background: transparent;
+  color: white;
+  padding: 10px 20px;
+  border: 2px solid #fff;
+}
+
+.button {
+  transition: all 0.3s ease-in-out;
+  text-transform: uppercase;
+  line-height: 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  color: #fff;
+  background: transparent;
+  letter-spacing: 1.5px;
+}
+.button:hover {
+  background: #fff;
+  color: #000;
+  letter-spacing: 5px;
+}

@@ -1,0 +1,76 @@
+.navbar {
+  display: flex;
+  gap: 20px;
+  color: white;
+  height: 100vh;
+}
+
+.nav-link{
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 600;
+  font-size: 21px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.logo-icon{
+  height: 50px;
+  background: transparent;
+  transition: all 0.3s linear;
+  filter: invert(1);
+  padding: 0.5rem;
+}
+.logo{
+  width: max-content;
+  height: max-content;
+  padding: 0.5rem 0.5rem;
+}
+.icon-hover:hover{
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.13);
+}
+.logo:hover {
+  border-radius: 100%;
+  background: rgba(255, 255, 255, 0.13);
+}
+.post-list {
+  width: 600px;
+  margin: 20px auto;
+}
+
+.post-item {
+  border: 1px solid #333;
+  padding: 20px;
+  margin-bottom: 10px;
+  border-radius: 15px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 450px;
+  margin: 20px auto;
+}
+
+form input,
+form textarea,
+form button {
+  padding: 8px;
+  font-size: 16px;
+}
+
+form button {
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #555;
+}
