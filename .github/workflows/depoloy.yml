@@ -3,25 +3,26 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main   # yoki master — sizning asosiy branch nomingiz
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout kodingiz
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: EC2 serverga ulanish va deploy qilish
+    - name: Deploy to EC2 server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
+        host: ${{ secrets.EC2_HOST }}          # EC2 public IP yoki DNS
+        username: ${{ secrets.EC2_USER }}      # Masalan, ec2-user yoki ubuntu
+        key: ${{ secrets.EC2_KEY }}            # Private SSH key (to‘liq)
         port: 22
         script: |
-          cd /home/ubuntu/your-app-folder
-          git pull origin main
-          npm install
-          npm run build
+          echo "Deploy started"
+          cd /home/ec2-user/myapp                # O‘zingizning yo‘lingizga moslashtiring
+          git pull origin main                    # Kodingizni yangilash (agar git bilan ishlasangiz)
+          ./deploy.sh                            # Sizning deploy skriptingiz yoki buyruqlar
+          echo "Deploy finished"
