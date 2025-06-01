@@ -21,7 +21,8 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         port: 22
         script: |
-          cd /home/ubuntu/your-app-folder
+          ls -la
+          cd /home/ubuntu/mini-twitter-backend
           git pull origin main
           npm install
           npm run build
