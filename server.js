@@ -257,26 +257,7 @@ app.get("/posts/:id/comments", async (req, res) => {
   }
 });
 
-// Backend API’lar (avvalgi kod)
-app.get('/api/something', (req, res) => { res.send('API response'); });
-
-// Frontend statik fayllarni xizmat qilish
 app.use(express.static(path.join(__dirname, 'mini-twitter-frontend/dist')));
-
-// Barcha boshqa so‘rovlar uchun index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'mini-twitter-frontend/dist/index.html'));
-});
-
-app.use(express.static(path.join(__dirname, 'mini-twitter-frontend/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'mini-twitter-frontend/dist/index.html'));
-});
-
-// Statik fayllarni xizmat qilish
-app.use(express.static(path.join(__dirname, 'mini-twitter-frontend/dist')));
-
-// Barcha so‘rovlar uchun index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'mini-twitter-frontend/dist/index.html'));
 });
