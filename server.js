@@ -268,6 +268,19 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'mini-twitter-frontend/dist/index.html'));
 });
 
+app.use(express.static(path.join(__dirname, 'mini-twitter-frontend/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'mini-twitter-frontend/dist/index.html'));
+});
+
+// Statik fayllarni xizmat qilish
+app.use(express.static(path.join(__dirname, 'mini-twitter-frontend/dist')));
+
+// Barcha so‘rovlar uchun index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'mini-twitter-frontend/dist/index.html'));
+});
+
 const PORT = 3030;
 app.listen(PORT, () => {
   console.log(`Server ${PORT} portda ishlayapti: http://localhost:${PORT}`);
