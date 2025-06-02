@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from "./pages/Home";
 import MyPosts from "./pages/MyPosts";
 import MyLikes from "./pages/MyLikes";
