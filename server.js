@@ -1,11 +1,17 @@
-const express = require("express");
-const { Pool } = require("pg");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const multer = require("multer");
-const path = require("path");
-const cors = require("cors");
-require("dotenv").config();
+import express from "express";
+import { Pool } from "pg";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import multer from "multer";
+import path from "path";
+import cors from "cors";
+import { config } from "dotenv";
+import { fileURLToPath } from "url";
+
+config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -20,6 +26,8 @@ const pool = new Pool({
   password: process.env.DB_PASS,
   port: process.env.DB_PORT,
 });
+
+console.log(process.env.DB_USER);
 
 pool
   .connect()
@@ -64,7 +72,7 @@ app.post("/signup", upload.single("profile_picture"), async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await pool.query(
-      "insert into users (name, username, profile_picture, password) VALUES ($1, $2, $3, $4) RETURNING *",
+      "INSERT INTO users (name, username, profile_picture, password) VALUES ($1, $2, $3, $4) RETURNING *",
       [name, username, profile_picture, hashedPassword]
     );
     res.json(newUser.rows[0]);
@@ -78,7 +86,7 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await pool.query("select * from users where username = $1", [
+    const user = await pool.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
     if (user.rows.length === 0) {
@@ -105,7 +113,7 @@ app.get("/profile", authenticateToken, async (req, res) => {
 
   try {
     const user = await pool.query(
-      "select id, name, username, profile_picture from users where id = $1",
+      "SELECT id, name, username, profile_picture FROM users WHERE id = $1",
       [user_id]
     );
     if (user.rows.length === 0) {
@@ -125,7 +133,7 @@ app.post("/posts", authenticateToken, upload.single("image"), async (req, res) =
 
   try {
     const newPost = await pool.query(
-      "insert into posts (user_id, text, image) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO posts (user_id, text, image) VALUES ($1, $2, $3) RETURNING *",
       [user_id, text, image]
     );
     res.json(newPost.rows[0]);
@@ -138,11 +146,11 @@ app.post("/posts", authenticateToken, upload.single("image"), async (req, res) =
 app.get("/posts", async (req, res) => {
   try {
     const posts = await pool.query(
-      `select posts.*, users.username, users.name, 
-       (select count(*) from likes where likes.post_id = posts.id) as like_count
-       from posts
-       join users on posts.user_id = users.id
-       order by posts.created_at DESC`
+      `SELECT posts.*, users.username, users.name, 
+       (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+       FROM posts
+       JOIN users ON posts.user_id = users.id
+       ORDER BY posts.created_at DESC`
     );
     res.json(posts.rows);
   } catch (err) {
@@ -156,12 +164,12 @@ app.get("/my-posts", authenticateToken, async (req, res) => {
 
   try {
     const posts = await pool.query(
-      `select posts.*, users.username, users.name, 
-       (select count(*) from likes where likes.post_id = posts.id) as like_count
-       from posts
-       join users on posts.user_id = users.id
-       where posts.user_id = $1
-       order by posts.created_at DESC`,
+      `SELECT posts.*, users.username, users.name, 
+       (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+       FROM posts
+       JOIN users ON posts.user_id = users.id
+       WHERE posts.user_id = $1
+       ORDER BY posts.created_at DESC`,
       [user_id]
     );
     res.json(posts.rows);
@@ -177,19 +185,19 @@ app.post("/posts/:id/like", authenticateToken, async (req, res) => {
 
   try {
     const existingLike = await pool.query(
-      "select * from likes where user_id = $1 AND post_id = $2",
+      "SELECT * FROM likes WHERE user_id = $1 AND post_id = $2",
       [user_id, post_id]
     );
 
     if (existingLike.rows.length > 0) {
       await pool.query(
-        "delete from likes where user_id = $1 AND post_id = $2",
+        "DELETE FROM likes WHERE user_id = $1 AND post_id = $2",
         [user_id, post_id]
       );
       res.send("Like o'chirildi");
     } else {
       await pool.query(
-        "insert into likes (user_id, post_id) VALUES ($1, $2) RETURNING *",
+        "INSERT INTO likes (user_id, post_id) VALUES ($1, $2) RETURNING *",
         [user_id, post_id]
       );
       res.send("Like qo'yildi");
@@ -205,13 +213,13 @@ app.get("/my-likes", authenticateToken, async (req, res) => {
 
   try {
     const posts = await pool.query(
-      `select posts.*, users.username, users.name, 
-       (select count(*) from likes where likes.post_id = posts.id) as like_count
-       from posts
-       join users on posts.user_id = users.id
-       join likes on posts.id = likes.post_id
-       where likes.user_id = $1
-       order by posts.created_at DESC`,
+      `SELECT posts.*, users.username, users.name, 
+       (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+       FROM posts
+       JOIN users ON posts.user_id = users.id
+       JOIN likes ON posts.id = likes.post_id
+       WHERE likes.user_id = $1
+       ORDER BY posts.created_at DESC`,
       [user_id]
     );
     res.json(posts.rows);
@@ -228,7 +236,7 @@ app.post("/posts/:id/comments", authenticateToken, async (req, res) => {
 
   try {
     const newComment = await pool.query(
-      "insert into comments (user_id, post_id, text) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO comments (user_id, post_id, text) VALUES ($1, $2, $3) RETURNING *",
       [user_id, post_id, text]
     );
     res.json(newComment.rows[0]);
@@ -243,11 +251,11 @@ app.get("/posts/:id/comments", async (req, res) => {
 
   try {
     const comments = await pool.query(
-      `select comments.*, users.username, users.name
-       from comments
-       join users on comments.user_id = users.id
-       where comments.post_id = $1
-       order by comments.created_at DESC`,
+      `SELECT comments.*, users.username, users.name
+       FROM comments
+       JOIN users ON comments.user_id = users.id
+       WHERE comments.post_id = $1
+       ORDER BY comments.created_at DESC`,
       [post_id]
     );
     res.json(comments.rows);
